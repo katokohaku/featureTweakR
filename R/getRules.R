@@ -15,6 +15,7 @@
 #' }
 #'
 #' @importFrom pforeach pforeach
+#' @export
 
 getRules <- function(forest, ntree=NULL, resample = FALSE){
 
