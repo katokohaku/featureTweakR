@@ -1,0 +1,16 @@
+Package: featureTweakR
+Type: Package
+Title: Calculate Actionable Feature Tweaking
+Version: 0.1.0
+Author: Satoshi Kato
+Maintainer: Satoshi Kato <kato.satoshi.0@gmail.com>
+Description: an R implementation of "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking" (https://arxiv.org/abs/1706.06691).
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+  dplyr,
+  purrr,
+  randomForest,
+  pforeach
+RoxygenNote: 6.0.1
