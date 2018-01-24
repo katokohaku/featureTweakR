@@ -1,9 +1,8 @@
-# get e-satisfactory instance of aim-leaf from all tree
-#' parse a decision tree in randomForest into list of path as data.frame
+#' get e-satisfactory instance of aim-leaf from all tree
 #'
-#' @param forest  a randomForest object to be parsed
-#' @param ntree   an integer. number of decision tree to be parsed. If ntree=NULL (default), all tree will be parsed.
-#' @param resample Logical. If TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ntree) from forest.
+#' @param forest  a randomForest object.
+#' @param ntree   an integer. Number of decision tree to be parsed. If ntree=NULL (default), all tree will be parsed.
+#' @param resample Logical. If reample=TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ntree) from forest.
 #' @param epsiron a numeric. Amount of "tolerance". All standardized feature value changes from threashold with this tolerance.
 #'
 #' @return        a list of trees (list).
@@ -22,6 +21,7 @@
 #' @importFrom dplyr mutate select
 #'
 #' @export
+
 set.eSatisfactory <- function(forest, ntree=NULL, resample = FALSE, epsiron = 0.1) {
   stopifnot(epsiron > 0)
 
