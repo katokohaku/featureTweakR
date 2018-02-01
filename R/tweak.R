@@ -1,10 +1,10 @@
 #' calcurate suggention for each inputs based on prediction
 #'
-#' @param obj
-#' @param newdata
-#' @param label.from
-#' @param lael.to
-#' @param .dopar
+#' @param esrules an object returned by set.eSatisfactory().
+#' @param newdata a data.frame or matrix. test data to be predicted and to be suggested. newdata must have the same structure of train data.
+#' @param label.from a character. Predicted class label that user wants to change.
+#' @param label.to a character. Class label that user wants to be changed from \code{label.from}.
+#' @param .dopar logical. If \code{.dopar = TRUE}, suggestion for each instance will be calculated in parallel
 #'
 #' @return        a list of trees (list).
 #' @examples
@@ -14,29 +14,28 @@
 #'
 #' rf.iris <- randomForest(X, true.y, ntree=30)
 #' es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
+#' tweaked <- tweak(es.rf, newdata= X.test, label.from = "spam", label.to = "nonspam",
+#' .dopar = TRUE)
 #' }
-#'
-#' @importFrom stats dist predict
-#' @importFrom pforeach pforeach npforeach
 #'
 #' @export
 
 tweak <- function(
-  obj, newdata, label.from, label.to, .dopar = TRUE)
+  esrules, newdata, label.from, label.to, .dopar = TRUE)
 {
-  stopifnot(class(obj) == "forest.eSatisfactoryRules",
+  stopifnot(class(esrules) == "forest.eSatisfactoryRules",
             !missing(newdata), !missing(label.from), !missing(label.to) )
 
-  forest <- obj$forest
-  estrees <- obj$trees
-  nestree <- length(obj$trees)
+  forest <- esrules$forest
+  estrees <- esrules$trees
+  nestree <- length(esrules$trees)
   catf("%i instances were predicted by %i trees: ", NROW(newdata), nestree)
 
-  pred.y <- predict(forest, newdata=newdata, predict.all=TRUE)
+  pred.y <- stats::predict(forest, newdata=newdata, predict.all=TRUE)
   pred.Freq <- table(pred.y$aggregate)
   print(pred.Freq)
 
-  .loop <- ifelse(.dopar, pforeach, npforeach)
+  .loop <- ifelse(.dopar, pforeach::pforeach, pforeach::npforeach)
   start.time <- Sys.time()
   tweak <- .loop(target.instance = 1:length(pred.y$aggregate), .combine = rbind)(
     {
@@ -68,7 +67,7 @@ tweak <- function(
             feature <- as.character(this.path[ip, ]$split.var)
             this.tweak[feature] <- this.path[ip, ]$e.satisfy
           }
-          delta <- dist(rbind(this.instance, this.tweak))
+          delta <- stats::dist(rbind(this.instance, this.tweak))
 
           if(delta < delta.min){
             if(predict(forest, newdata=this.tweak) == label.to){
@@ -82,7 +81,9 @@ tweak <- function(
     }
   )
   print(Sys.time() - start.time)
-  all.tweak <- list(predict = pred.y$aggregate, original = newdata, suggest = tweak)
+  all.tweak <- list(predict = pred.y$aggregate,
+                    original = newdata,
+                    suggest = tweak)
   class(all.tweak) <- "tweaked.suggestion"
   return(all.tweak)
 }

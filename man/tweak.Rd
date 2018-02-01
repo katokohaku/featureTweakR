@@ -30,6 +30,8 @@ true.y <- iris[, ncol(iris)]
 
 rf.iris <- randomForest(X, true.y, ntree=30)
 es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
+tweaked <- tweak(es.rf, newdata= X.test, label.from = "spam", label.to = "nonspam",
+.dopar = TRUE)
 }
 
 }
