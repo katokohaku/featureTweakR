@@ -4,9 +4,9 @@ require(magrittr)
 require(randomForest)
 # devtools::install_github("hoxo-m/pforeach")
 require(pforeach)
+require(featureTweakR)
 
 rm(list=ls())
-source("./R/tweak_feature.R")
 
 
 # data preparation -------------------------------------------------------------
@@ -34,8 +34,8 @@ par(mfrow=c(1,1))
 
 # model shrinkage based on importance -------------------------
 top.importance <- forest.all$importance %>% data.frame %>%
-  tibble::rownames_to_column(var = "var") %>% 
-  arrange(desc(MeanDecreaseGini)) %>% 
+  tibble::rownames_to_column(var = "var") %>%
+  arrange(desc(MeanDecreaseGini)) %>%
   head(12)
 
 dataset.train.fs <- dataset.train %>% select(top.importance$var)
@@ -59,12 +59,12 @@ plot(forest.rf)
 # feature tweaking  ---------------------------------------------------------------
 
 # test sampling (for demo)
-ep <- getRules.randomForest(forest.rf, k=2, label.to = NULL)
+ep <- featureTweakR:::getRules.randomForest(forest.rf, k=2, label.to = NULL)
 ep %>% str(2)
 ep[["spam"]]$path[[1]]
 
 # es.rf_ <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3)
-es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
+es.rf <- set.eSatisfactory(forest.rf, ntree = 10, epsiron = 0.3, resample = TRUE)
 es.rf %>% str(2)
 
 

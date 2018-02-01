@@ -14,7 +14,6 @@
 #' getRules(rf.iris, ntree=15)
 #' }
 #'
-#' @importFrom pforeach pforeach
 #' @export
 
 getRules <- function(forest, ntree=NULL, resample = FALSE){
@@ -38,7 +37,7 @@ getRules <- function(forest, ntree=NULL, resample = FALSE){
     }
 
     start.time <- Sys.time()
-    all.trees <- pforeach(k = i.tree, .c=list)({
+    all.trees <- pforeach::pforeach(k = i.tree, .c=list)({
       getRules.randomForest(forest, k=k)
     })
     print(Sys.time() - start.time)

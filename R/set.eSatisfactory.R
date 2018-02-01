@@ -15,11 +15,6 @@
 #' es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
 #' }
 #'
-#' @importFrom pforeach pforeach npforeach
-#' @importFrom magrittr %>%
-#' @importFrom purrr map
-#' @importFrom dplyr mutate select
-#'
 #' @export
 
 set.eSatisfactory <- function(forest, ntree=NULL, resample = FALSE, epsiron = 0.1) {
@@ -33,13 +28,13 @@ set.eSatisfactory <- function(forest, ntree=NULL, resample = FALSE, epsiron = 0.
   all.eTrees <- pforeach::pforeach(tree.rules = all.trees, .c=list)({
     tree.eRules <- NULL
     for(cn in names(tree.rules)){
-      tree.eRules[[cn]] <- map(
+      tree.eRules[[cn]] <- purrr::map(
         tree.rules[[cn]]$path,
         function(obj){
-          mutate(obj,
+          m.obj <- dplyr::mutate(obj,
                  eps = ifelse(lr=="<", -epsiron, +epsiron),
-                 e.satisfy = point + eps) %>%
-            select(-node, -path.to)
+                 e.satisfy = point + eps)
+          dplyr::select(m.obj, -node, -path.to)
         }
       )
     }

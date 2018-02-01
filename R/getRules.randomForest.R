@@ -15,9 +15,6 @@
 #' getRules.randomForest(rf.iris, k=1, label.to = "virginica")
 #' }
 #'
-#' @importFrom randomForest randomForest getTree
-#' @importFrom pforeach npforeach
-#'
 
 getRules.randomForest <- function(forest, k=1, label.to=NULL) {
   stopifnot(class(forest) == "randomForest")

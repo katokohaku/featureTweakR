@@ -31,15 +31,13 @@ do.nothing <- function(...){}
 #' @examples
 #' chop(iris, 140)
 #'
-#' @importFrom utils head
-#' @importFrom utils tail
 #' @export
 
 chop <- function(X, n = 1) {
   if(n > 0) {
-    head(X, NROW(X) - n)
+    utils::head(X, NROW(X) - n)
   } else {
-    tail(X, NROW(X) - abs(n))
+    utils::tail(X, NROW(X) - abs(n))
   }
 }
 #' Scale a matrix with parameters of a scaled matix
@@ -74,8 +72,6 @@ rescale <- function(X, scaled){
 #' descale(head(iris.scaled), iris.scaled)
 #' head(iris)
 #'
-#' @importFrom dplyr as_data_frame
-#' @importFrom purrr pmap_df
 #' @export
 
 descale <- function(X, scaled){

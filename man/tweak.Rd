@@ -4,16 +4,18 @@
 \alias{tweak}
 \title{calcurate suggention for each inputs based on prediction}
 \usage{
-tweak(obj, newdata, label.from, label.to, .dopar = TRUE)
+tweak(esrules, newdata, label.from, label.to, .dopar = TRUE)
 }
 \arguments{
-\item{forest}{a randomForest object.}
+\item{esrules}{an object returned by set.eSatisfactory().}
 
-\item{ntree}{an integer. Number of decision tree to be parsed. If ntree=NULL (default), all tree will be parsed.}
+\item{newdata}{a data.frame or matrix. test data to be predicted and to be suggested. newdata must have the same structure of train data.}
 
-\item{resample}{Logical. If reample=TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ntree) from forest.}
+\item{label.from}{a character. Predicted class label that user wants to change.}
 
-\item{epsiron}{a numeric. Amount of "tolerance". All standardized feature value changes from threashold with this tolerance.}
+\item{label.to}{a character. Class label that user wants to be changed from \code{label.from}.}
+
+\item{.dopar}{logical. If \code{.dopar = TRUE}, suggestion for each instance will be calculated in parallel}
 }
 \value{
 a list of trees (list).
