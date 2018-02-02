@@ -1,6 +1,7 @@
 #' Calcurate suggention for each inputs based on prediction
 #'
 #' @param esrules an object returned by set.eSatisfactory().
+#' @param forest  an object of ensemble trees to be parsed. See \code{\link{randomForest}} or \code{\link{xgboost}}.
 #' @param newdata a data.frame or matrix. test data to be predicted and to be suggested. newdata must have the same structure of train data.
 #' @param label.from a character. Predicted class label that user wants to change.
 #' @param label.to a character. Class label that user wants to be changed from \code{label.from}.
@@ -28,14 +29,15 @@
 #' @export
 
 tweak <- function(
-  esrules, newdata, label.from, label.to, .dopar = TRUE)
+  esrules, forest, newdata, label.from, label.to, .dopar = TRUE)
 {
-  stopifnot(class(esrules) == "forest.eSatisfactoryRules",
+  stopifnot(class(esrules) == "eSatisfactoryRules", !missing(forest),
             !missing(newdata), !missing(label.from), !missing(label.to) )
 
-  forest  <- esrules$forest
-  estrees <- esrules$trees
-  nestree <- length(esrules$trees)
+  if(class(forest) != "randomForest"){
+    stop("Currently only compatible with randomForest")
+  }
+  nestree <- length(esrules)
   catf("%i instances were predicted by %i trees: ", NROW(newdata), nestree)
 
   pred.y  <- stats::predict(forest, newdata=newdata, predict.all=TRUE)
@@ -61,7 +63,7 @@ tweak <- function(
         catf("- SKIP")
       } else {
         cand.eSatisfy <- pforeach::npforeach(i.tree = tree.agreed)(
-          estrees[[i.tree]][[label.to]]
+          esrules[[i.tree]][[label.to]]
         )
         catf("evaluate %i rules in %i trees",
              length(cand.eSatisfy), length(tree.agreed))
@@ -84,7 +86,7 @@ tweak <- function(
           }
         }
         catf("- evalutate %i candidate of rules (delta.min=%.3f)",
-             length(estrees), delta.min)
+             length(esrules), delta.min)
       }
 
       return(tweaked.instance)
