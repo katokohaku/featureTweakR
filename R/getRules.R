@@ -1,8 +1,8 @@
 #' parse a decision tree in randomForest into list of path as data.frame
 #'
-#' @param forest  a randomForest object to be parsed
-#' @param ntree   an integer. number of decision tree to be parsed. If ntree=NULL (default), all tree will be parsed.
-#' @param resample Logical. If TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ntree) from forest.
+#' @param forest  an object of ensemble trees to be parsed. See \code{\link{randomForest}} or \code{\link{xgboost}}.
+#' @param ktree   an integer. number of decision tree to be parsed. If ktree=NULL (default), all tree will be parsed.
+#' @param resample Logical. If TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ktree) from forest.
 #'
 #' @return        a list of trees (list).
 #' @examples
@@ -11,22 +11,22 @@
 #' true.y <- iris[, ncol(iris)]
 #'
 #' rf.iris <- randomForest(X, true.y, ntree=30)
-#' getRules(rf.iris, ntree=15)
+#' getRules(rf.iris, ktree=15)
 #' }
 #'
 #' @export
 
-getRules <- function(forest, ntree=NULL, resample = FALSE){
+getRules <- function(forest, ktree=NULL, resample = FALSE){
 
   all.trees <- NULL
   i.tree <- NULL
   if(class(forest) == "randomForest"){
 
-    if(is.null(ntree)){
+    if(is.null(ktree)){
       i.tree <- 1:forest$ntree
       catf("extracting all (%i of %i trees)", length(i.tree), forest$ntree)
     } else {
-      maxk <- ifelse(ntree > forest$ntree, forest$ntree, ntree)
+      maxk <- ifelse(ktree > forest$ntree, forest$ntree, ktree)
       if(resample == FALSE){
         i.tree <- 1:maxk
         catf("extracting head(%i) of %i trees", length(i.tree), forest$ntree)
@@ -46,5 +46,6 @@ getRules <- function(forest, ntree=NULL, resample = FALSE){
     catf("Currently not compatible with xgboost")
   }
 
+  class(all.trees) <- "extractedRules"
   return(all.trees)
 }

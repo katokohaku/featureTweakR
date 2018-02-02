@@ -4,10 +4,12 @@
 \alias{tweak}
 \title{Calcurate suggention for each inputs based on prediction}
 \usage{
-tweak(esrules, newdata, label.from, label.to, .dopar = TRUE)
+tweak(esrules, forest, newdata, label.from, label.to, .dopar = TRUE)
 }
 \arguments{
 \item{esrules}{an object returned by set.eSatisfactory().}
+
+\item{forest}{an object of ensemble trees to be parsed. See \code{\link{randomForest}} or \code{\link{xgboost}}.}
 
 \item{newdata}{a data.frame or matrix. test data to be predicted and to be suggested. newdata must have the same structure of train data.}
 

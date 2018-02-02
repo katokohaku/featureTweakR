@@ -4,14 +4,10 @@
 \alias{set.eSatisfactory}
 \title{get e-satisfactory instance of aim-leaf from all tree}
 \usage{
-set.eSatisfactory(forest, ntree = NULL, resample = FALSE, epsiron = 0.1)
+set.eSatisfactory(rules, epsiron = 0.1)
 }
 \arguments{
-\item{forest}{a randomForest object.}
-
-\item{ntree}{an integer. Number of decision tree to be parsed. If ntree=NULL (default), all tree will be parsed.}
-
-\item{resample}{Logical. If reample=TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ntree) from forest.}
+\item{rules}{an objectrandomForest object.}
 
 \item{epsiron}{a numeric. Amount of "tolerance". All standardized feature value changes from threashold with this tolerance.}
 }
@@ -27,7 +23,8 @@ X <- iris[, 1:(ncol(iris)-1)]
 true.y <- iris[, ncol(iris)]
 
 rf.iris <- randomForest(X, true.y, ntree=30)
-es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
+rules.rf <- getRules(rf.iris, ktree = 20)
+es.rf <- set.eSatisfactory(forest.rf, epsiron = 0.3)
 }
 
 }

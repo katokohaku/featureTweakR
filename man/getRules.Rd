@@ -4,14 +4,14 @@
 \alias{getRules}
 \title{parse a decision tree in randomForest into list of path as data.frame}
 \usage{
-getRules(forest, ntree = NULL, resample = FALSE)
+getRules(forest, ktree = NULL, resample = FALSE)
 }
 \arguments{
-\item{forest}{a randomForest object to be parsed}
+\item{forest}{an object of ensemble trees to be parsed. See \code{\link{randomForest}} or \code{\link{xgboost}}.}
 
-\item{ntree}{an integer. number of decision tree to be parsed. If ntree=NULL (default), all tree will be parsed.}
+\item{ktree}{an integer. number of decision tree to be parsed. If ktree=NULL (default), all tree will be parsed.}
 
-\item{resample}{Logical. If TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ntree) from forest.}
+\item{resample}{Logical. If TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ktree) from forest.}
 }
 \value{
 a list of trees (list).
@@ -25,7 +25,7 @@ X <- iris[, 1:(ncol(iris)-1)]
 true.y <- iris[, ncol(iris)]
 
 rf.iris <- randomForest(X, true.y, ntree=30)
-getRules(rf.iris, ntree=15)
+getRules(rf.iris, ktree=15)
 }
 
 }

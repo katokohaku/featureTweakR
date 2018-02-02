@@ -1,8 +1,6 @@
 #' get e-satisfactory instance of aim-leaf from all tree
 #'
-#' @param forest  a randomForest object.
-#' @param ntree   an integer. Number of decision tree to be parsed. If ntree=NULL (default), all tree will be parsed.
-#' @param resample Logical. If reample=TRUE, trees are ramdomly selected. If FALSE, trees are selected according to head(ntree) from forest.
+#' @param rules  an objectrandomForest object.
 #' @param epsiron a numeric. Amount of "tolerance". All standardized feature value changes from threashold with this tolerance.
 #'
 #' @return        a list of trees (list).
@@ -12,20 +10,19 @@
 #' true.y <- iris[, ncol(iris)]
 #'
 #' rf.iris <- randomForest(X, true.y, ntree=30)
-#' es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
+#' rules.rf <- getRules(rf.iris, ktree = 20)
+#' es.rf <- set.eSatisfactory(forest.rf, epsiron = 0.3)
 #' }
 #'
 #' @export
 
-set.eSatisfactory <- function(forest, ntree=NULL, resample = FALSE, epsiron = 0.1) {
-  stopifnot(epsiron > 0)
+set.eSatisfactory <- function(rules, epsiron = 0.1) {
 
-  all.trees <- getRules(forest, ntree=ntree, resample=resample)
-  stopifnot(! is.null(all.trees))
+  stopifnot(class(rules) == "extractedRules", epsiron > 0)
 
-  catf("set e-satisfactory instance (%i trees)", length(all.trees))
+  catf("set e-satisfactory instance (%i trees)", length(rules))
   start.time <- Sys.time()
-  all.eTrees <- pforeach::pforeach(tree.rules = all.trees, .c=list)({
+  esrules <- pforeach::pforeach(tree.rules = rules, .c=list)({
     tree.eRules <- NULL
     for(cn in names(tree.rules)){
       tree.eRules[[cn]] <- purrr::map(
@@ -42,8 +39,7 @@ set.eSatisfactory <- function(forest, ntree=NULL, resample = FALSE, epsiron = 0.
   })
   print(Sys.time() - start.time)
 
-  esforest <- list(forest = forest, trees = all.eTrees)
-  class(esforest) <- "forest.eSatisfactoryRules"
-  invisible(esforest)
+  class(esrules) <- "eSatisfactoryRules"
+  invisible(esrules)
 }
 

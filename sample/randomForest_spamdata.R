@@ -7,23 +7,18 @@ require(randomForest)
 require(featureTweakR)
 
 rm(list=ls())
+set.seed(777)
 
 
 # data preparation -------------------------------------------------------------
-set.seed(777)
 
 data(spam, package = "kernlab")
-dataset <- sample_frac(spam)
-n.test <- floor(NROW(dataset) *0.1)
+dataset <- sample_frac(spam) %>% dataSplit(test.ratio = 0.1)
 
-dataset.train <- chop(dataset, n.test)
-dataset.test  <- tail(dataset, n.test)
-
-dim(dataset);dim(dataset.train);dim(dataset.test)
 
 # bilding randomForest -----------------------------------------
-X <- dataset.train[, 1:(ncol(dataset.train)-1)]
-true.y <- dataset.train[, ncol(dataset.train)]
+X <- dataset$train[, 1:(ncol(dataset$train)-1)]
+true.y <- dataset$train[, ncol(dataset$train)]
 
 forest.all <- randomForest(X, true.y, ntree=500)
 forest.all
@@ -33,51 +28,51 @@ plot(forest.all)
 par(mfrow=c(1,1))
 
 # model shrinkage based on importance -------------------------
-top.importance <- forest.all$importance %>% data.frame %>%
+top.importance <- forest.all$importance %>%
+  data.frame %>%
   tibble::rownames_to_column(var = "var") %>%
   arrange(desc(MeanDecreaseGini)) %>%
   head(12)
 
-dataset.train.fs <- dataset.train %>% select(top.importance$var)
-dataset.test.fs  <- dataset.test %>% select(top.importance$var)
+X.train = dataset$train %>% select(top.importance$var)
+newdata = dataset$test %>% select(top.importance$var)
+true.y  = true.y
+ntree   = 100
 
-# scaling feature-selected data  ---------------------------
-X.train <- scale( dataset.train.fs )
-X.test  <- rescale( dataset.test.fs, scaled = X.train )
-
-dataset.test.fs[1:6, 1:6]
-descale(X.test, scaled = X.train)[1:6, 1:6]
-descale(X.test, scaled = X.test)[1:6, 1:6]
-
-forest.rf <- randomForest(X.train, true.y, ntree=100)
+forest.rf <- randomForest(X.train, true.y, ntree = ntree)
 
 forest.all
 forest.rf
 plot(forest.rf)
-
-
-# feature tweaking  ---------------------------------------------------------------
 
 # test sampling (for demo)
 ep <- featureTweakR:::getRules.randomForest(forest.rf, k=2, label.to = NULL)
 ep %>% str(2)
 ep[["spam"]]$path[[1]]
 
-# es.rf_ <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3)
-es.rf <- set.eSatisfactory(forest.rf, ntree = 10, epsiron = 0.3, resample = TRUE)
-es.rf$trees %>% str(2)
+# feature tweaking  -----------------------------------------------
+ktree    = 22
+resample = TRUE
+
+train.scaled <- scale(X.train)
+test.scaled  <- rescale(newdata, scaled = train.scaled)
+forest.rf <- randomForest(train.scaled, true.y, ntree = ktree)
+
+print(forest.rf)
+plot(forest.rf)
+
+rules.rf <- getRules(forest.rf, ktree = ktree, resample = resample)
+es.rf   <- set.eSatisfactory(rules.rf, epsiron = 0.3)
 
 
-# eval predicted instance -------------------------------------------------
 
-# tweaked_ <- tweak(es.rf, newdata= X.test, label.from = "spam", label.to = "nonspam",
-#                  .dopar = FALSE)
-tweaked <- tweak(es.rf, newdata= X.test, label.from = "spam", label.to = "nonspam",
+tweaked <- tweak(es.rf, forest = forest.rf, newdata= test.scaled,
+                 label.from = "spam", label.to = "nonspam",
                  .dopar = TRUE)
 
 tweaked %>% str
-
 tweaked$original- tweaked$suggest
+
 
 dt <- descale.tweakedFeature(tweaked, X.test)
 dt %>% str(1)
