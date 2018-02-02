@@ -3,7 +3,7 @@ require(tidyverse)
 require(magrittr)
 require(randomForest)
 # devtools::install_github("hoxo-m/pforeach")
-require(pforeach)
+# require(pforeach)
 require(featureTweakR)
 
 rm(list=ls())
@@ -65,7 +65,7 @@ ep[["spam"]]$path[[1]]
 
 # es.rf_ <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3)
 es.rf <- set.eSatisfactory(forest.rf, ntree = 10, epsiron = 0.3, resample = TRUE)
-es.rf %>% str(2)
+es.rf$trees %>% str(2)
 
 
 # eval predicted instance -------------------------------------------------
@@ -74,23 +74,25 @@ es.rf %>% str(2)
 #                  .dopar = FALSE)
 tweaked <- tweak(es.rf, newdata= X.test, label.from = "spam", label.to = "nonspam",
                  .dopar = TRUE)
+
 tweaked %>% str
 
+tweaked$original- tweaked$suggest
 
-dt <- descale.tweakedFeature(tweaked, X.test)
-dt %>% str(1)
+# dt <- descale.tweakedFeature(tweaked, X.test)
+# dt %>% str(1)
 
 # plot suggestion for each instance
 which(tweaked$predict == "spam")
-plot.suggest(tweaked, 4)
-plot.suggest(tweaked, 11)
-plot.suggest(tweaked, 15)
-plot.suggest(tweaked, 15, .ordered = TRUE, .nonzero.only = TRUE)
+plotSuggest(tweaked, 4)
+plotSuggest(tweaked, 11)
+plotSuggest(tweaked, 15)
+plotSuggest(tweaked, 15, .ordered = TRUE, .nonzero.only = TRUE)
 
 
 # Plot population importances
-pp <- plot.tweakedPopulation(tweaked, "a")
-pp <- plot.tweakedPopulation(tweaked, "d")
-pp <- plot.tweakedPopulation(tweaked, "f")
+pp <- plot(tweaked, type="a")
+pp <- plot(tweaked, type="d")
+pp <- plot(tweaked, type="f")
 
 # end ---------------------------------------------------------------------
