@@ -24,34 +24,6 @@ true.y <- dataset$train[ ,ncol(dataset$train)]
 
 # feature tweaking  -----------------------------------------------
 
-
-buildInstance <- function(
-  X.train, true.y, ntree = 50, epsiron = 0.1,
-  type = c("randomForest", "xgboost"), .tryModel = FALSE)
-{
-  train.scaled <- scale(X.train)
-
-  method <- match.arg(type)
-  if(! method == "randomForest"){ stop("Only randomForest") }
-
-  forest <- randomForest(train.scaled, true.y, ntree = ntree)
-  plot(forest)
-  if(.tryModel) { return(forest) }
-
-  print(forest)
-  catf("")
-
-  rules <- getRules(forest, ktree = NULL, resample = TRUE)
-  es    <- set.eSatisfactory(rules, epsiron = 0.3)
-
-  obj <- list(
-    origin = X.train, scaled = train.scaled, forest = forest,
-    rules = rules, esatisfy= es)
-
-  class(obj) <- "buildInstance"
-  invisible(obj)
-}
-
 buildInstance(X.train = data.train, true.y = true.y, .tryModel = TRUE)
 es <- buildInstance(X.train = data.train, true.y = true.y, ntree = 22)
 
@@ -59,7 +31,7 @@ es <- buildInstance(X.train = data.train, true.y = true.y, ntree = 22)
 newdata = data.test
 
 test.scaled  <- rescale(newdata, scaled = train.scaled)
-tweaked <- tweak(es.rf, forest = forest.rf, newdata= test.scaled,
+tweaked <- tweak(es, forest = forest.rf, newdata= test.scaled,
                  label.from = "spam", label.to = "nonspam",
                  .dopar = TRUE)
 
