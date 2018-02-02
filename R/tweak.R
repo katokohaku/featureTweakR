@@ -40,7 +40,9 @@ tweak <- function(
   nestree <- length(esrules)
   catf("%i instances were predicted by %i trees: ", NROW(newdata), nestree)
 
-  pred.y  <- stats::predict(forest, newdata=newdata, predict.all=TRUE)
+  pred.y  <- randomForest:::predict.randomForest(forest,
+                                                 newdata=newdata,
+                                                 predict.all=TRUE)
   pred.Freq <- table(pred.y$aggregate)
   print(pred.Freq)
 

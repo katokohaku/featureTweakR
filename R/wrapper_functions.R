@@ -51,11 +51,11 @@ learnModel <- function(
 predict.modelTweakFeature <- function(
   object, ..., newdata, label.from, label.to) {
 
-  test.scaled  <- rescale(newdata, scaled = esInstance$scaled)
+  test.scaled  <- rescale(newdata, scaled = object$scaled)
 
-  tweaked <- tweak(esrules = esInstance$esatisfy,
-                   forest = esInstance$forest,
-                   newdata= test.scaled,
+  tweaked <- tweak(esrules = object$esatisfy,
+                   forest  = object$forest,
+                   newdata = test.scaled,
                    label.from = label.from, label.to = label.to,
                    .dopar = TRUE)
 
