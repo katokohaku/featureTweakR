@@ -79,8 +79,8 @@ tweaked %>% str
 
 tweaked$original- tweaked$suggest
 
-# dt <- descale.tweakedFeature(tweaked, X.test)
-# dt %>% str(1)
+dt <- descale.tweakedFeature(tweaked, X.test)
+dt %>% str(1)
 
 # plot suggestion for each instance
 which(tweaked$predict == "spam")

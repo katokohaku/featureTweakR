@@ -14,21 +14,22 @@
 #'  \item{"stats"}{ a data.frame of statistics for each feature. }
 #'  \item{"plot"}{ a ggplot object (for replot). }
 #' }
-#'
+#' Default is "absoluteSum".
 #'
 #' @examples
 #' \dontrun{
 #' X <- iris[, 1:(ncol(iris)-1)]
+#' scaled.X <- scale(X)
 #' true.y <- iris[, ncol(iris)]
 #'
-#' rf.iris <- randomForest(X, true.y, ntree=30)
+#' rf.iris <- randomForest(scaled.X, true.y, ntree=30)
 #' es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
-#' tweaked <- tweak(es.rf, newdata= X.test, label.from = "spam", label.to = "nonspam",
+#' tweaked <- tweak(es.rf, newdata= scaled.X, label.from = "spam", label.to = "nonspam",
 #'                  .dopar = TRUE)
-#' plot(tweaked, "a")
-#' plot(tweaked, "d")
-#' plot(tweaked, "f")
-#'
+#' plot(tweaked)
+#' plot(tweaked, type="a")
+#' plot(tweaked, type="d")
+#' plot(tweaked, type="f")
 #' }
 #'
 #' @importFrom magrittr %>%

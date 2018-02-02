@@ -7,7 +7,7 @@
 rescale(X, scaled)
 }
 \arguments{
-\item{X}{a matrixa or a data.frame to be scaled}
+\item{X}{a matrix or a data.frame to be scaled}
 
 \item{scaled}{a scaled matrixa or a scaled data.frame}
 }

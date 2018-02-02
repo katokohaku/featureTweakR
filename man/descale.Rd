@@ -7,7 +7,7 @@
 descale(X, scaled)
 }
 \arguments{
-\item{X}{a matrixa or a data.frame to be restored}
+\item{X}{a matrix or a data.frame to be restored}
 
 \item{scaled}{a scaled matrixa or a scaled data.frame}
 }

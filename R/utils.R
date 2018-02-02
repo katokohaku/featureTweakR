@@ -43,7 +43,7 @@ chop <- function(X, n = 1) {
 #' Scale a matrix with parameters of a scaled matix
 #' @details  X is scaled by \code{center = attr(scaled, "scaled:center")} and \code{scale = attr(scaled, "scaled:scale")}
 #'
-#' @param X       a matrixa or a data.frame to be scaled
+#' @param X       a matrix or a data.frame to be scaled
 #' @param scaled  a scaled matrixa or a scaled data.frame
 #'
 #' @return        a tibble
@@ -63,7 +63,7 @@ rescale <- function(X, scaled){
 
 #' Restore a scaled matrix to a matrix with original parameters.
 #'
-#' @param X         a matrixa or a data.frame to be restored
+#' @param X         a matrix or a data.frame to be restored
 #' @param scaled  a scaled matrixa or a scaled data.frame
 #'
 #' @return          a tibble
