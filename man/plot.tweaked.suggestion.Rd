@@ -5,7 +5,7 @@
 \title{Plot statistics for suggestion of tweaked instances (population)}
 \usage{
 \method{plot}{tweaked.suggestion}(x, ..., type = c("absoluteSum", "direction",
-  "frequency"))
+  "frequency"), .invisible = FALSE)
 }
 \arguments{
 \item{x}{an object returned by tweak().}
@@ -17,7 +17,10 @@
  \item{"absoluteSum"}{ draw baplot for absolute sum of suggestions. }
  \item{"direction"}{ draw boxplot for suggestions among instances. }
  \item{"frequency"}{ draw baplot for total number of tweaked among instances. }
-}}
+}
+\code{"absoluteSum"} is defult.}
+
+\item{.invisible}{a logical. If \code{.invisible = TRUE}, plot won't be shown.}
 }
 \value{
 a list of

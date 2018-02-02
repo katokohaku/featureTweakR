@@ -4,7 +4,8 @@
 \alias{plotSuggest}
 \title{Plot individual suggestion (direction to modify)}
 \usage{
-plotSuggest(x, k = 1, .ordered = FALSE, .nonzero.only = FALSE)
+plotSuggest(x, k = 1, .ordered = FALSE, .nonzero.only = FALSE,
+  .invisible = FALSE)
 }
 \arguments{
 \item{x}{an object returned by tweak().}
@@ -13,7 +14,9 @@ plotSuggest(x, k = 1, .ordered = FALSE, .nonzero.only = FALSE)
 
 \item{.ordered}{a logical. If \code{.ordered = TRUE}, features are sorted by suggestion.}
 
-\item{.nonzero.only}{a logical. If \code{.nonzero.only = TRUE}, feature with suggestion = 0 is not shown.}
+\item{.nonzero.only}{a logical. If \code{.nonzero.only = TRUE}, feature with suggestion = 0 is not be shown.}
+
+\item{.invisible}{a logical. If \code{.invisible = TRUE}, plot won't be shown.}
 }
 \value{
 a ggplot object (for replot).

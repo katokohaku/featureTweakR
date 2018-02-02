@@ -8,7 +8,8 @@
 #'  \item{"direction"}{ draw boxplot for suggestions among instances. }
 #'  \item{"frequency"}{ draw baplot for total number of tweaked among instances. }
 #' }
-#'
+#' \code{"absoluteSum"} is defult.
+#' @param .invisible  a logical. If \code{.invisible = TRUE}, plot won't be shown.
 #' @return a list of
 #' \itemize{
 #'  \item{"stats"}{ a data.frame of statistics for each feature. }
@@ -39,7 +40,7 @@
 #' @export
 
 plot.tweaked.suggestion <- function(
-  x, ..., type = c( "absoluteSum", "direction", "frequency"))
+  x, ..., type = c( "absoluteSum", "direction", "frequency"), .invisible = FALSE)
 {
   stopifnot(class(x) == "tweaked.suggestion")
 
@@ -84,8 +85,10 @@ plot.tweaked.suggestion <- function(
   }
 
   rownames(stats) <- NULL
-  print(stats)
-  print(p)
+  if(! .invisible){
+    print(stats)
+    print(p)
+  }
 
   invisible(list(stats = stats, plot = p))
 }
@@ -96,7 +99,8 @@ plot.tweaked.suggestion <- function(
 #' @param x  an object returned by tweak().
 #' @param k  an integer. The tweaked direction of k-th instance will be plotted.
 #' @param .ordered  a logical. If \code{.ordered = TRUE}, features are sorted by suggestion.
-#' @param .nonzero.only  a logical. If \code{.nonzero.only = TRUE}, feature with suggestion = 0 is not shown.
+#' @param .nonzero.only  a logical. If \code{.nonzero.only = TRUE}, feature with suggestion = 0 is not be shown.
+#' @param .invisible  a logical. If \code{.invisible = TRUE}, plot won't be shown.
 #'
 #' @return a ggplot object (for replot).
 #'
@@ -118,7 +122,8 @@ plot.tweaked.suggestion <- function(
 #' @importFrom ggplot2 labs coord_flip
 #' @export
 
-plotSuggest <- function(x, k = 1, .ordered = FALSE, .nonzero.only = FALSE){
+plotSuggest <- function(
+  x, k = 1, .ordered = FALSE, .nonzero.only = FALSE, .invisible = FALSE){
 
   stopifnot(class(x) == "tweaked.suggestion")
   tw.diff <- data.frame(x$suggest - x$original)
@@ -141,8 +146,10 @@ plotSuggest <- function(x, k = 1, .ordered = FALSE, .nonzero.only = FALSE){
     labs(x = "", y = "directions of tweak") +
     coord_flip()
 
-  print(p)
-  print(instance)
+  if(! .invisible){
+    print(p)
+    print(instance)
+  }
 
   invisible(p)
 }
