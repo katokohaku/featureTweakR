@@ -7,13 +7,16 @@
 catf(..., file = "", append = FALSE, newline = TRUE)
 }
 \arguments{
-\item{...}{See sprintf}
+\item{...}{See \code{\link{sprintf}}}
 
 \item{file}{See cat. Default is ""}
 
 \item{append}{See cat. Default is FALSE.}
 
 \item{newline}{Append newline at the end? Default is TRUE.}
+}
+\value{
+a string
 }
 \description{
 Same function as 'catf()' in BBmisc except for returning [str]
