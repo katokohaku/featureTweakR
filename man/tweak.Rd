@@ -2,7 +2,7 @@
 % Please edit documentation in R/tweak.R
 \name{tweak}
 \alias{tweak}
-\title{calcurate suggention for each inputs based on prediction}
+\title{Calcurate suggention for each inputs based on prediction}
 \usage{
 tweak(esrules, newdata, label.from, label.to, .dopar = TRUE)
 }
@@ -18,10 +18,15 @@ tweak(esrules, newdata, label.from, label.to, .dopar = TRUE)
 \item{.dopar}{logical. If \code{.dopar = TRUE}, suggestion for each instance will be calculated in parallel}
 }
 \value{
-a list of trees (list).
+a list of
+\itemize{
+ \item{"predict"}{ character vector of predicted label of each instance. See \code{\link{predict.randomForest}}. }
+ \item{"original"}{ is the same as \code{newdata}. }
+ \item{"suggest"}{ a data.frame of instances tweakd from newdata. }
+}
 }
 \description{
-calcurate suggention for each inputs based on prediction
+Calcurate suggention for each inputs based on prediction
 }
 \examples{
 \dontrun{
@@ -31,7 +36,7 @@ true.y <- iris[, ncol(iris)]
 rf.iris <- randomForest(X, true.y, ntree=30)
 es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
 tweaked <- tweak(es.rf, newdata= X.test, label.from = "spam", label.to = "nonspam",
-.dopar = TRUE)
+                 .dopar = TRUE)
 }
 
 }

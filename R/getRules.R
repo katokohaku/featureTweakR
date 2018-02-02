@@ -38,7 +38,7 @@ getRules <- function(forest, ntree=NULL, resample = FALSE){
 
     start.time <- Sys.time()
     all.trees <- pforeach::pforeach(k = i.tree, .c=list)({
-      getRules.randomForest(forest, k=k)
+      featureTweakR:::getRules.randomForest(forest, k=k)
     })
     print(Sys.time() - start.time)
   }

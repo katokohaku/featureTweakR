@@ -46,3 +46,4 @@ set.eSatisfactory <- function(forest, ntree=NULL, resample = FALSE, epsiron = 0.
   class(esforest) <- "forest.eSatisfactoryRules"
   invisible(esforest)
 }
+
