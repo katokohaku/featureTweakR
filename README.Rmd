@@ -1,0 +1,69 @@
+---
+title: "R Package for Actionable Feature Tweaking"
+author: Satoshi Kato (@katokohaku)
+output:
+  html_document:
+    keep_md: yes
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE
+)
+library(mvtnorm)
+```
+
+## Overview
+
+an implementation to R-package of 
+**Gabriele Tolomei, Fabrizio Silvestri, Andrew Haines, Mounia Lalmas "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking". KDD 2017. [(arXiv)](https://arxiv.org/abs/1706.06691)**
+
+## Installation
+
+You can install the **featureTweakR** package from [GitHub](https://github.com/katokohaku/featureTweakR).
+
+```{r eval=FALSE}
+install.packages("devtools") # if you have not installed "devtools" package
+devtools::install_github("hoxo-m/pforeach") # if you have not installed "pforeach" package
+devtools::install_github("katokohaku/featureTweakR")
+```
+
+The source code for **featureTweakR** package is available on GitHub at
+
+- https://github.com/katokohaku/featureTweakR.
+
+## Examples
+```{r result, cache=TRUE}
+require(tidyverse)
+require(featureTweakR)
+
+set.seed(777)
+
+data(spam, package = "kernlab")
+dataset <- sample_frac(spam) %>% dataSplit(test.ratio = 0.1)
+
+
+important.var <- c("charExclamation", "charDollar", "remove", "free", "capitalAve", "capitalLong", "your", "hp")
+data.train <- dataset$train %>% select(important.var)
+true.y     <- dataset$train[ ,ncol(dataset$train)]
+
+
+
+data.test  <- dataset$test  %>% select(important.var) %>% head(50)
+
+es <- learnModel(X.train = data.train, true.y = true.y, ntree = 22)
+ft <- predict(es, newdata = data.test, label.from = "spam", label.to = "nonspam")
+
+str(ft,2)
+plot(ft, k=4)
+
+
+plot(ft, type = "direction")
+
+
