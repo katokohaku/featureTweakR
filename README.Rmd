@@ -2,10 +2,10 @@
 title: "R Package for Actionable Feature Tweaking"
 author: Satoshi Kato (@katokohaku)
 output:
-  html_document:
-    keep_md: yes
   md_document:
     variant: markdown_github
+  html_document:
+    keep_md: yes
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
