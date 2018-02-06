@@ -63,14 +63,13 @@ ft <- predict(es, newdata = data.test, label.from = "spam", label.to = "nonspam"
 ### Visualize recommendation
 provides ***plots()***
 
-#### Plot individual polcy of tweaking for an instance
-```{r plotIndividual, cache=TRUE}
-plot(ft, k=4)
-```
-
 #### Visualize importance
 ```{r plotPopulation, cache=TRUE}
 plot(ft, type = "direction")
 ```
 
+#### Plot individual polcy of tweaking for an instance
+```{r plotIndividual, cache=TRUE}
+plot(ft, k=4)
+```
 

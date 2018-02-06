@@ -72,7 +72,7 @@ es <- learnModel(X.train = data.train, true.y = true.y, ntree = 22)
 #> set e-satisfactory instance (22 trees)
 #> Time difference of 19.61371 secs
 ```
-### Suggest recommendation according to prediction
+### Suggest recommendation
 Based on learnt model, new instances that were predicted *label.from* will be suggested how to **tweaked**
 
 ```r
@@ -85,6 +85,24 @@ ft <- predict(es, newdata = data.test, label.from = "spam", label.to = "nonspam"
 ```
 ### Visualize recommendation
 provides ***plots()***
+
+#### Visualize importance
+
+```r
+plot(ft, type = "direction")
+#> [1] "direction"
+#>          variable         mean       median
+#> 1      capitalAve -0.410701677 -0.410701677
+#> 2     capitalLong -0.163625451 -0.163625451
+#> 3      charDollar  0.073373763  0.073373763
+#> 4 charExclamation -0.237100753 -0.237100753
+#> 5            free  0.002478275  0.002478275
+#> 6              hp  0.262414439  0.262414439
+#> 7          remove -0.062532566 -0.062532566
+#> 8            your -0.121496167 -0.121496167
+```
+
+![](README_files/figure-html/plotPopulation-1.png)<!-- -->
 
 #### Plot individual polcy of tweaking for an instance
 
@@ -106,23 +124,4 @@ plot(ft, k=4)
 #> 7          remove  0.00000000
 #> 8            your -0.31147905
 ```
-
-#### Visualize importance
-
-```r
-plot(ft, type = "direction")
-#> [1] "direction"
-#>          variable         mean       median
-#> 1      capitalAve -0.410701677 -0.410701677
-#> 2     capitalLong -0.163625451 -0.163625451
-#> 3      charDollar  0.073373763  0.073373763
-#> 4 charExclamation -0.237100753 -0.237100753
-#> 5            free  0.002478275  0.002478275
-#> 6              hp  0.262414439  0.262414439
-#> 7          remove -0.062532566 -0.062532566
-#> 8            your -0.121496167 -0.121496167
-```
-
-![](README_files/figure-html/plotPopulation-1.png)<!-- -->
-
 
