@@ -13,7 +13,7 @@ output:
 ## Overview
 
 an implementation to R-package of 
-**Gabriele Tolomei, Fabrizio Silvestri, Andrew Haines, Mounia Lalmas "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking". KDD 2017. [(arXiv)](https://arxiv.org/abs/1706.06691)**
+**Gabriele Tolomei, Fabrizio Silvestri, Andrew Haines, Mounia Lalmas "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking". [KDD 2017](http://www.kdd.org/kdd2017/papers/view/interpretable-predictions-of-tree-based-ensembles-via-actionable-feature-tw) or [arXiv paper](https://arxiv.org/abs/1706.06691)**
 
 ## Installation
 
@@ -35,6 +35,9 @@ The source code for **featureTweakR** package is available on GitHub at
 ```r
 set.seed(777)
 require(tidyverse)
+#> Warning: package 'tidyverse' was built under R version 3.4.3
+#> Warning: package 'tibble' was built under R version 3.4.3
+#> Warning: package 'dplyr' was built under R version 3.4.2
 require(featureTweakR)
 
 data(spam, package = "kernlab")
