@@ -35,9 +35,6 @@ The source code for **featureTweakR** package is available on GitHub at
 ```r
 set.seed(777)
 require(tidyverse)
-#> Warning: package 'tidyverse' was built under R version 3.4.3
-#> Warning: package 'tibble' was built under R version 3.4.3
-#> Warning: package 'dplyr' was built under R version 3.4.2
 require(featureTweakR)
 
 data(spam, package = "kernlab")
