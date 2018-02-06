@@ -19,8 +19,10 @@ learnModel <- function(
   if(! method == "randomForest"){ stop("Only randomForest") }
 
   forest <- randomForest::randomForest(train.scaled, true.y, ntree = ntree)
-  plot(forest)
-  if(.tryModel) { return(forest) }
+  if(.tryModel) {
+    plot(forest)
+    return(forest)
+  }
 
   print(forest)
   catf("")

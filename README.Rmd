@@ -55,7 +55,7 @@ After data preparation, just call wrapper function to learn ensemble trees + est
 ```{r learnModel, cache=TRUE}
 es <- learnModel(X.train = data.train, true.y = true.y, ntree = 22)
 ```
-### Suggest recommendation according to prediction
+### Suggest recommendation
 Based on learnt model, new instances that were predicted *label.from* will be suggested how to **tweaked**
 ```{r predict, cache=TRUE}
 ft <- predict(es, newdata = data.test, label.from = "spam", label.to = "nonspam")
