@@ -16,6 +16,8 @@ Imports:
   purrr,
   ggplot2,
   randomForest,
-  xgboost,
-  pforeach
+  xgboost
+Remotes:
+  hoxo-m/pforeach
+
 RoxygenNote: 6.0.1
