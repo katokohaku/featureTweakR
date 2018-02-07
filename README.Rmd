@@ -14,15 +14,14 @@ knitr::opts_chunk$set(
   comment = "#>",
   message = FALSE
 )
-library(mvtnorm)
 ```
 
-## Overview
+# Overview
 
 an implementation to R-package of 
-**Gabriele Tolomei, Fabrizio Silvestri, Andrew Haines, Mounia Lalmas "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking". [KDD 2017](http://www.kdd.org/kdd2017/papers/view/interpretable-predictions-of-tree-based-ensembles-via-actionable-feature-tw) or [arXiv paper](https://arxiv.org/abs/1706.06691)**
+**Gabriele Tolomei, Fabrizio Silvestri, Andrew Haines, Mounia Lalmas "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking". *See* [KDD 2017](http://www.kdd.org/kdd2017/papers/view/interpretable-predictions-of-tree-based-ensembles-via-actionable-feature-tw) or [arXiv paper](https://arxiv.org/abs/1706.06691)**
 
-## Installation
+# Installation
 
 You can install the **featureTweakR** package from [GitHub](https://github.com/katokohaku/featureTweakR).
 
@@ -35,41 +34,50 @@ devtools::install_github("katokohaku/featureTweakR")
 The source code for **featureTweakR** package is available on GitHub at
 - https://github.com/katokohaku/featureTweakR.
 
-## Examples
+# Examples
+
 ### Data preparation
-```{r dataPrep, cache=TRUE}
+
+```{r data.prep, warning=FALSE}
 set.seed(777)
 require(tidyverse)
 require(featureTweakR)
 
 data(spam, package = "kernlab")
-dataset <- sample_frac(spam) %>% dataSplit(test.ratio = 0.1)
+i.test  <- sample(1:NROW(spam),  200)
+i.train <- intersect(1:NROW(spam),  i.test)
 
 important.var <- c("charExclamation", "charDollar", "remove", "free", "capitalAve", "capitalLong", "your", "hp")
-data.train <- dataset$train %>% select(important.var)
-true.y     <- dataset$train[ ,ncol(dataset$train)]
-data.test  <- dataset$test  %>% select(important.var) %>% head(50)
+dataset <- spam %>% select(important.var)
+data.train <- dataset[i.train, ]
+true.y     <- dataset[i.train, ncol(dataset)]
+data.test  <- dataset[i.test,  ]
 ```
 ### Build ensemble learner & Extract rules
-After data preparation, just call wrapper function to learn ensemble trees + estimate recommendation rules.
-```{r learnModel, cache=TRUE}
-es <- learnModel(X.train = data.train, true.y = true.y, ntree = 22)
+
+After data preparation, just call wrapper function `learnModel()` to learn ensemble trees + estimate recommendation rules.
+
+```{r learnModel, cache=FALSE}
+es <- learnModel(X.train = data.train, true.y = true.y, ntree = 25)
 ```
+
 ### Suggest recommendation
-Based on learnt model, new instances that were predicted *label.from* will be suggested how to **tweaked**
-```{r predict, cache=TRUE}
+
+Based on learnt model, new instances that were predicted *`label.from`* will be suggested **how to tweaked**
+```{r predict, cache=FALSE}
 ft <- predict(es, newdata = data.test, label.from = "spam", label.to = "nonspam")
 ```
 ### Visualize recommendation
-provides ***plots()***
 
-#### Visualize importance
-```{r plotPopulation, cache=TRUE}
+To visualize predicted-population based feature importance, set `type = "direction"`.
+
+```{r plotPopulation, cache=FALSE}
 plot(ft, type = "direction")
 ```
 
-#### Plot individual polcy of tweaking for an instance
-```{r plotIndividual, cache=TRUE}
+To visualize suggestion how to change variables of k-th instance to get the desired prediction, set `k = ...`
+
+```{r plotIndividual, cache=FALSE}
 plot(ft, k=4)
 ```
 
