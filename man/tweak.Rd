@@ -36,7 +36,8 @@ X <- iris[, 1:(ncol(iris)-1)]
 scaled.X <- scale(X)
 true.y <- iris[, ncol(iris)]
 
-rf.iris <- randomForest(scaled.X, true.y, ntree=30)
+rf.iris <- randomForest(X, true.y, ntree=30)
+rules.rf <- getRules(rf.iris, ktree = 20)
 es.rf <- set.eSatisfactory(forest.rf, ntree = 30, epsiron = 0.3, resample = TRUE)
 tweaked <- tweak(es.rf, newdata= scaled.X, label.from = "spam", label.to = "nonspam",
                  .dopar = TRUE)

@@ -5,3 +5,4 @@
 *.html
 README_cache
 *.xxx
+doc/*

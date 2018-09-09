@@ -4,6 +4,7 @@ author: Satoshi Kato (@katokohaku)
 output: 
   html_document:
     keep_md: yes
+    toc: yes
   md_document:
     variant: markdown_github
 ---
@@ -18,66 +19,205 @@ knitr::opts_chunk$set(
 
 # Overview
 
-an implementation to R-package of 
-**Gabriele Tolomei, Fabrizio Silvestri, Andrew Haines, Mounia Lalmas "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking". *See* [KDD 2017](http://www.kdd.org/kdd2017/papers/view/interpretable-predictions-of-tree-based-ensembles-via-actionable-feature-tw) or [arXiv paper](https://arxiv.org/abs/1706.06691)**
+An R-package to visualize suggestion how to change variables of an instance to get the desired prediction based on ensemble tree model such as randomForest.
 
-# Installation
+### Preparation
+
+```{r data.prep, warning=FALSE}
+set.seed(777)
+require(tidyverse)
+require(randomForest)
+require(featureTweakR)
+
+data(spam, package = "kernlab")
+dataset <- sample_frac(spam) %>% dataSplit(test.ratio = 0.1)
+
+important.var <- c("charExclamation", "charDollar", "remove", "free", "capitalAve", "capitalLong", "your", "hp")
+data.train <- dataset$train %>% select(important.var)
+true.y     <- dataset$train[ ,ncol(dataset$train)]
+data.test  <- dataset$test  %>% select(important.var) %>% head(50)
+
+```
+
+After data preparation, just call wrapper function:
+
+1. `learnModel()` to extract rules from ensemble trees,
+2. `predict()` to estimate suggestion for each instance from extracted rules,
+3. `plot()` to visualize suggestion or poplation based importances.
+
+### Extract rules
+
+```{r learnModel, cache=TRUE}
+es <- learnModel(X.train = data.train, true.y = true.y, ntree = 25)
+```
+
+### Estimate suggestions for new instances
+
+Based on learnt model, new instances that were predicted *`label.from`* will be suggested **how to tweaked**
+```{r predict, cache=TRUE}
+ft <- predict(es, newdata = data.test, 
+              label.from = "spam", label.to = "nonspam")
+```
+### Visualize suggestion
+
+To visualize predicted-population based feature importance, set `type = "direction"`.
+
+```{r plotPopulation, cache=TRUE}
+plot(ft, type = "direction")
+```
+
+To visualize suggestion how to change variables of k-th instance to get the desired prediction, set `k = ...`
+
+```{r plotIndividual, cache=TRUE}
+plot(ft, k=4)
+```
+
+# Details
+
+## Installation
 
 You can install the **featureTweakR** package from [GitHub](https://github.com/katokohaku/featureTweakR).
 
 ```{r eval=FALSE}
-install.packages("devtools") # if you have not installed "devtools" package
-devtools::install_github("hoxo-m/pforeach") # if you have not installed "pforeach" package
+ # if you have not installed "devtools" package
+install.packages("devtools")
+ # if you have not installed "pforeach" package
+devtools::install_github("hoxo-m/pforeach")
+
 devtools::install_github("katokohaku/featureTweakR")
 ```
 
 The source code for **featureTweakR** package is available on GitHub at
 - https://github.com/katokohaku/featureTweakR.
 
-# Examples
+## data preparation 
 
-### Data preparation
-
-```{r data.prep, warning=FALSE}
+```{r detail.data.prep}
 set.seed(777)
-require(tidyverse)
-require(featureTweakR)
 
 data(spam, package = "kernlab")
-i.test  <- sample(1:NROW(spam),  200)
-i.train <- intersect(1:NROW(spam),  i.test)
+dataset <- sample_frac(spam)
+n.test <- floor(NROW(dataset) *0.1)
 
-important.var <- c("charExclamation", "charDollar", "remove", "free", "capitalAve", "capitalLong", "your", "hp")
-dataset <- spam %>% select(important.var)
-data.train <- dataset[i.train, ]
-true.y     <- dataset[i.train, ncol(dataset)]
-data.test  <- dataset[i.test,  ]
-```
-### Build ensemble learner & Extract rules
+dataset.train <- chop(dataset, n.test)
+dataset.test  <- tail(dataset, n.test)
 
-After data preparation, just call wrapper function `learnModel()` to learn ensemble trees + estimate recommendation rules.
-
-```{r learnModel, cache=FALSE}
-es <- learnModel(X.train = data.train, true.y = true.y, ntree = 25)
+dim(dataset);dim(dataset.train);dim(dataset.test)
 ```
 
-### Suggest recommendation
+## exploring randomForest
 
-Based on learnt model, new instances that were predicted *`label.from`* will be suggested **how to tweaked**
-```{r predict, cache=FALSE}
-ft <- predict(es, newdata = data.test, label.from = "spam", label.to = "nonspam")
+### build randomForest
+
+To view variable importances and number of trees required. 
+
+```{r detail.touch.rf}
+X <- dataset.train[, 1:(ncol(dataset.train)-1)]
+true.y <- dataset.train[, ncol(dataset.train)]
+
+forest.all <- randomForest(X, true.y, ntree=500)
+forest.all
+par(mfrow=c(1,2))
+varImpPlot(forest.all) # to view varImp, x3 & x4 should be removed.
+plot(forest.all)
+par(mfrow=c(1,1))
+
 ```
-### Visualize recommendation
+
+### model shrinkage (feature selection) based on importance 
+
+```{r detail.feature.selection}
+top.importance <- forest.all$importance %>% data.frame %>%
+  tibble::rownames_to_column(var = "var") %>% 
+  arrange(desc(MeanDecreaseGini)) %>% 
+  head(12)
+top.importance
+
+dataset.train.fs <- dataset.train %>% select(top.importance$var)
+dataset.test.fs  <- dataset.test %>% select(top.importance$var)
+```
+
+### scaling feature-selected data  
+
+```{r detail.scalse.feature}
+X.train <- scale( dataset.train.fs )
+X.test  <- rescale( dataset.test.fs, scaled = X.train )
+
+dataset.test.fs[1:6, 1:6]
+descale(X.test, scaled = X.train)[1:6, 1:6]
+descale(X.test, scaled = X.test)[1:6, 1:6]
+```
+
+### performance comparison forest with all-feature v.s. selected-features
+
+```{r detail.build.rf, cache=TRUE}
+forest.rf <- randomForest(X.train, true.y, ntree=100)
+
+forest.all
+forest.rf
+plot(forest.rf)
+
+```
+
+## Step-by-step procedure
+
+After build forest, steps to obtain suggestions **without wrapper functios** are:
+
+1. rule extraction
+2. get modified(tweaked) rules
+3. get the best tweaked rule (the suggestion) for each instance
+4. restore suggestion to real scale.
+5. visualize
+
+### extract rules
+
+```{r detail.get.rules, cache=TRUE}
+rules <- getRules(forest.rf, ktree = NULL, resample = TRUE)
+# rules[[1]]
+
+```
+
+### set modified rules (e-satisfactory instances)
+```{r detail.get.esatisfactory, cache=TRUE}
+es.rf <- set.eSatisfactory(rules, epsiron = 0.3)
+# es.rf[[1]]
+
+```
+
+### predict individual suggestion for each instance
+```{r tweak.each, cache=TRUE}
+
+tweaked <- tweak(es.rf, forest.rf, newdata= X.test, 
+                 label.from = "spam", label.to = "nonspam", .dopar = TRUE)
+
+str(tweaked,1,vec.len = 2)
+```
+### restore suggestion from scaled feature to original scale.
+
+```{r detail.restore}
+dt <- descale.tweakedFeature(tweaked, X.test)
+```
+
+### Visualize suggestion
 
 To visualize predicted-population based feature importance, set `type = "direction"`.
 
-```{r plotPopulation, cache=FALSE}
-plot(ft, type = "direction")
+```{r detail.plotPopulation, cache=TRUE}
+plot(tweaked, type = "direction")
 ```
 
 To visualize suggestion how to change variables of k-th instance to get the desired prediction, set `k = ...`
 
-```{r plotIndividual, cache=FALSE}
-plot(ft, k=4)
+```{r detail.plotIndividual, cache=TRUE}
+plotSuggest(tweaked, k=4)
 ```
+To view only non-zero variable or sorted values, set `.ordered = TRUE``.nonzero.only = TRUE`, respectively.
+
+```{r detail.plotIndividual.opt, cache=TRUE}
+plotSuggest(tweaked, k=4, .ordered = TRUE, .nonzero.only = TRUE)
+```
+
+# References
+
+**Gabriele Tolomei, Fabrizio Silvestri, Andrew Haines, Mounia Lalmas "Interpretable Predictions of Tree-based Ensembles via Actionable Feature Tweaking". [KDD 2017](http://www.kdd.org/kdd2017/papers/view/interpretable-predictions-of-tree-based-ensembles-via-actionable-feature-tw) or [arXiv paper](https://arxiv.org/abs/1706.06691)**
 
